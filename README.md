@@ -14,14 +14,14 @@ pip install pyadbautomator
 ## Usage
 
 ```python
-    py_adb_unit = PyAdbAutomator('com.android.chrome', 5)
-    py_adb_unit.open()
-    url_bar = py_adb_unit.first('resource-id', 'com.android.chrome:id/url_bar')
+    py_adb_automator = PyAdbAutomator('com.android.chrome', 5)
+    py_adb_automator.open()
+    url_bar = py_adb_automator.first('resource-id', 'com.android.chrome:id/url_bar')
     if url_bar:
         url_bar.text('https://github.com/guifabrin')
-    py_adb_unit.enter()
+    py_adb_automator.enter()
     time.sleep(10)
-    py_adb_unit.close()
+    py_adb_automator.close()
 ```
 
 ## Contributing
