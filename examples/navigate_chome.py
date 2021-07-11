@@ -1,6 +1,6 @@
 import time
 
-from pyadbautomator.main import PyAdbAutomator
+from src.pyadbautomator_package.pyadbautomator import PyAdbAutomator
 
 if __name__ == '__main__':
     py_adb_automator = PyAdbAutomator('com.android.chrome', 5)

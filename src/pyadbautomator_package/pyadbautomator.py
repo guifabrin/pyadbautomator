@@ -25,9 +25,11 @@ def get_root(seconds_delay=0) -> object:
 
 class PyAdbNode:
     element = NotImplementedError
+    automator = NotImplementedError
 
-    def __init__(self, element):
+    def __init__(self, element, automator):
         self.element = element
+        self.automator = automator
 
     def click(self):
         init, end = self.element.attrib['bounds'].split('][')
@@ -36,10 +38,15 @@ class PyAdbNode:
         bound_x = (int(bound_a) + int(bound_c)) / 2
         bound_y = (int(bound_b) + int(bound_d)) / 2
         subprocess.call("adb shell input tap " + str(bound_x) + " " + str(bound_y), shell=True)
+        self.automator.update()
 
     def text(self, string):
         self.click()
         subprocess.call("adb shell input text \"" + string + "\"", shell=True)
+        self.automator.update()
+
+    def get_attr(self, attrib):
+        return self.element.attrib[attrib]
 
 
 class PyAdbAutomator:
@@ -53,21 +60,23 @@ class PyAdbAutomator:
 
     def open(self):
         subprocess.call("adb shell monkey -p " + self.package + " -c android.intent.category.LAUNCHER 1", shell=True)
-        self._root = get_root(self.seconds_delay)
+        self.update()
 
     def close(self):
         subprocess.call("adb shell am force-stop " + self.package, shell=True)
-        self._root = get_root(self.seconds_delay)
+        self.update()
 
     def enter(self):
         subprocess.call("adb shell input keyevent 66", shell=True)
+
+    def update(self):
         self._root = get_root(self.seconds_delay)
 
     def select(self, attrib, value, root=None) -> list:
         if root is None:
             root = self._root
         filtered = filter(lambda node: node.attrib[attrib] == value, root.findall('.//*'))
-        mapped = map(lambda node: PyAdbNode(node), filtered)
+        mapped = map(lambda node: PyAdbNode(node, self), filtered)
         return list(mapped)
 
     def first(self, attrib, value, root=None):
